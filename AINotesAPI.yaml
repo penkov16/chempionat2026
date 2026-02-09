@@ -5,7 +5,8 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://188.127.227.228:8080/api
+  - url: /api
+  description: API Server
 
 tags:
   - name: users
