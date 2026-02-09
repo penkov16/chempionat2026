@@ -1,0 +1,531 @@
+openapi: 3.1.0
+
+info:
+  title: AINotes API
+  version: 1.0.0
+
+servers:
+  - url: http://188.127.227.228:8080/api
+
+tags:
+  - name: users
+  - name: media
+  - name: notes
+
+paths:
+  /collections/users/records:
+    post:
+      summary: Регистрация пользователя
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  examples: [ "test@example.com" ]
+                password:
+                  type: string
+                  examples: [ "12345678" ]
+                passwordConfirm:
+                  type: string
+                  examples: [ "12345678" ]
+                emailVisibility:
+                  type: boolean
+                  examples: [ true ]
+        required: true
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /collections/users/auth-with-password:
+    post:
+      summary: Авторизация с паролем
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identity:
+                  type: string
+                  examples: [ "test@example.com" ]
+                password:
+                  type: string
+                  examples: [ "12345678" ]
+        required: true
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Auth"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /collections/users/records/{id}:
+    get:
+      summary: Получение пользователя
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "test"
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+  /collections/media/records:
+    post:
+      summary: Создание медиа
+      tags:
+        - media
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                  examples: [ "test" ]
+                file:
+                  type: string
+                  format: binary
+        required: true
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Media"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+    get:
+      summary: Получение списка медиа
+      tags:
+        - media
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediasList"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+  /collections/media/records/{id}:
+    get:
+      summary: Получение медиа
+      tags:
+        - media
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "test"
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Media"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+    delete:
+      summary: Удаление медиа
+      tags:
+        - media
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "test"
+      responses:
+        "204":
+          description: Успешная операция
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+  /files/media/{id}/{file}:
+    get:
+      summary: Загрузка медиа
+      tags:
+        - media
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "test"
+        - name: file
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "filename.jpg"
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+
+  /collections/notes/records:
+    post:
+      summary: Создание заметки
+      tags:
+        - notes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                  examples: [ "test" ]
+                name:
+                  type: string
+                  examples: [ "test" ]
+                text:
+                  type: string
+                  examples: [ "test" ]
+        required: true
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+    get:
+      summary: Получение списка заметок
+      tags:
+        - notes
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotesList"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+  /collections/notes/records/{id}:
+    get:
+      summary: Получение заметки
+      tags:
+        - notes
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "test"
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+    patch:
+      summary: Изменение заметки
+      tags:
+        - notes
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "test"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                  examples: [ "test" ]
+                name:
+                  type: string
+                  examples: [ "test" ]
+                text:
+                  type: string
+                  examples: [ "test" ]
+        required: true
+      responses:
+        "200":
+          description: Успешная операция
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+    delete:
+      summary: Удаление заметки
+      tags:
+        - notes
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: "test"
+      responses:
+        "204":
+          description: Успешная операция
+        default:
+          description: Сообщение об ошибке
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: [ ]
+
+components:
+  schemas:
+    Auth:
+      type: object
+      properties:
+        token:
+          type: string
+          examples: [ "JWT_TOKEN" ]
+        record:
+          type: object
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          examples: [ "test" ]
+        email:
+          type: string
+          format: email
+          examples: [ "test@example.com" ]
+        created:
+          type: string
+          format: date-time
+          examples: [ "2022-01-01 10:00:00.123Z" ]
+
+    Media:
+      type: object
+      properties:
+        id:
+          type: string
+          examples: [ "test" ]
+        user:
+          type: string
+          examples: [ "RELATION_RECORD_ID" ]
+        file:
+          type: string
+          examples: [ "filename.jpg" ]
+        created:
+          type: string
+          format: date-time
+          examples: [ "2022-01-01 10:00:00.123Z" ]
+
+    MediasList:
+      type: object
+      properties:
+        page:
+          type: integer
+          examples: [ 1 ]
+        perPage:
+          type: integer
+          examples: [ 30 ]
+        totalPages:
+          type: integer
+          examples: [ 1 ]
+        totalItems:
+          type: integer
+          examples: [ 1 ]
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Media'
+
+    Note:
+      type: object
+      properties:
+        id:
+          type: string
+          examples: [ "test" ]
+        user:
+          type: string
+          examples: [ "RELATION_RECORD_ID" ]
+        name:
+          type: string
+          examples: [ "test" ]
+        text:
+          type: string
+          examples: [ "test" ]
+        created:
+          type: string
+          format: date-time
+          examples: [ "2022-01-01 10:00:00.123Z" ]
+        updated:
+          type: string
+          format: date-time
+          examples: [ "2022-01-01 10:00:00.123Z" ]
+
+    NotesList:
+      type: object
+      properties:
+        page:
+          type: integer
+          examples: [ 1 ]
+        perPage:
+          type: integer
+          examples: [ 30 ]
+        totalPages:
+          type: integer
+          examples: [ 1 ]
+        totalItems:
+          type: integer
+          examples: [ 1 ]
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+          examples: [ 400 ]
+        message:
+          type: string
+          examples: [ "Failed to create record." ]
+        data:
+          type: object
+          examples: [ { } ]
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
